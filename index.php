@@ -3,7 +3,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+require_once('db.php');
 require_once('functions.php');
+
+connect();
+db_setUp();
 
 $date_str = ($_SERVER['REQUEST_METHOD'] == 'POST')
 	? $_POST['date']
