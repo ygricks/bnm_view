@@ -1,6 +1,5 @@
 <?php
 
-
 function get_bnm_curs($date, $allow_code=['EUR']) {
 	try {
 		// # date format example ...&&date=20.07.2021
@@ -21,7 +20,8 @@ function get_bnm_curs($date, $allow_code=['EUR']) {
 				$name = (string) $valute?->Name;
 				$value = (float) $valute?->Value;
 				$nominal = (float) $valute?->Nominal;
-				$curs[$id] = compact('code','name','value','nominal');
+				$date = (string) $xml['Date'];
+				$curs[$id] = compact('code', 'name', 'value', 'nominal', 'date');
 			}
 		}
 		return [
@@ -29,6 +29,6 @@ function get_bnm_curs($date, $allow_code=['EUR']) {
 			'curs' => $curs
 		];
 	} catch (Exception $e) {
-		return null;	
+		return null;
 	}
 }
