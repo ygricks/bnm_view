@@ -26,5 +26,40 @@ function db_setUp() {
 }
 
 function db_insert_curs($data) {
-	// insert curs
+	$req = "INSERT INTO `curs`(date,code,name,value,nominal) VALUES ";
+	$values = [];
+	foreach($data as $valute) {
+		$value = sprintf("('%s','%s','%s','%s', '%s')",
+			$valute['date'],
+			$valute['code'],
+			$valute['name'],
+			$valute['value'],
+			$valute['nominal']
+		);
+		$values[] = $value;
+	}
+	if(count($values)) {
+		$req .= implode(' , ', $values);
+		$mysqli = connect();
+		try{
+			if(!$mysqli->query($req)) {
+				throw new Exception('error inert!');
+			}
+		}catch( Exception $e ){
+			$mysqli->rollback();
+		}
+		$mysqli->commit();
+	}
+}
+
+function get_db_curs($date) {
+	$query = sprintf("SELECT * FROM `curs` WHERE date='%s'", $date->format('Y-m-d'));
+	$mysqli = connect();
+	$result = $mysqli->query($query);
+
+	$data = [];
+	while($row = $result->fetch_assoc()) {
+	    $data[] = $row;
+	}
+	return $data;
 }

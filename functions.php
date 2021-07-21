@@ -2,33 +2,38 @@
 
 function get_bnm_curs($date, $allow_code=['EUR']) {
 	try {
-		// # date format example ...&&date=20.07.2021
-		// $bnm_url = 'https://www.bnm.md/en/official_exchange_rates?get_xml=1&date=%s';
-		// $xml_source = sprintf($bnm_url, $date->format('d.m.Y'));
+		# date format example ...&&date=20.07.2021
+		$bnm_url = 'https://www.bnm.md/en/official_exchange_rates?get_xml=1&date=%s';
+		$xml_source = sprintf($bnm_url, $date->format('d.m.Y'));
 
-		# file test
-		$xml_source = __DIR__ . DIRECTORY_SEPARATOR . 'curs.xml';
+		// # file test
+		// $xml_source = __DIR__ . DIRECTORY_SEPARATOR . 'curs.xml';
 
 		$xml_string = file_get_contents($xml_source);
 		$xml = new SimpleXMLElement(trim($xml_string));
 
+		$date = $date->format('Y-m-d');
 		$curs = [];
 		foreach($xml->Valute as $valute) {
 			$code = (string) $valute?->CharCode;
 			if(in_array($code, $allow_code)) {
-				$id = (int) $valute['ID'];
+				// $id = (int) $valute['ID'];
 				$name = (string) $valute?->Name;
 				$value = (float) $valute?->Value;
 				$nominal = (float) $valute?->Nominal;
-				$date = (string) $xml['Date'];
-				$curs[$id] = compact('code', 'name', 'value', 'nominal', 'date');
+				// $date = $date->format('Y-m-d');
+				$curs[] = compact('code', 'name', 'value', 'nominal', 'date');
 			}
 		}
-		return [
-			'date' => (string) $xml['Date'],
-			'curs' => $curs
-		];
+		return $curs;
 	} catch (Exception $e) {
 		return null;
 	}
+}
+
+function template($template, $values=[]) {
+	ob_start();
+	extract($values);
+	require_once('template' . DIRECTORY_SEPARATOR . $template . '.php');
+	return ob_get_clean();
 }
