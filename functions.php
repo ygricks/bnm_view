@@ -1,6 +1,6 @@
 <?php
 
-function get_bnm_curs($date, $allow_code=['EUR']) {
+function get_bnm_curs($date) {
 	try {
 		# date format example ...&&date=20.07.2021
 		$bnm_url = 'https://www.bnm.md/en/official_exchange_rates?get_xml=1&date=%s';
@@ -16,14 +16,10 @@ function get_bnm_curs($date, $allow_code=['EUR']) {
 		$curs = [];
 		foreach($xml->Valute as $valute) {
 			$code = (string) $valute?->CharCode;
-			if(in_array($code, $allow_code)) {
-				// $id = (int) $valute['ID'];
-				$name = (string) $valute?->Name;
-				$value = (float) $valute?->Value;
-				$nominal = (float) $valute?->Nominal;
-				// $date = $date->format('Y-m-d');
-				$curs[] = compact('code', 'name', 'value', 'nominal', 'date');
-			}
+			$name = (string) $valute?->Name;
+			$value = (float) $valute?->Value;
+			$nominal = (float) $valute?->Nominal;
+			$curs[] = compact('code', 'name', 'value', 'nominal', 'date');
 		}
 		return $curs;
 	} catch (Exception $e) {
