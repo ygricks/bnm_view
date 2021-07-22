@@ -22,7 +22,15 @@ function db_setUp() {
 		PRIMARY KEY (date, code)
 	)";
 	$mysqli = connect();
-	return $mysqli->query($req);
+	$mysqli->query($req);
+	// # procedure
+	$mysqli->query("DROP PROCEDURE IF EXISTS p");
+	$mysqli->query("CREATE PROCEDURE p(day VARCHAR(10), code_list TEXT)
+	BEGIN SELECT * FROM curs WHERE FIND_IN_SET(code, code_list)>0 AND date=DATE(day); END;");
+	$mysqli->query("SET GLOBAL event_scheduler = ON");
+	$mysqli->query("DROP EVENT IF EXISTS b");
+	$mysqli->query("CREATE EVENT IF NOT EXISTS b ON SCHEDULE EVERY 23 DAY_HOUR DO INSERT INTO curt (date,code,name,value,nominal) SELECT  date,code,name,value,nominal FROM curs WHERE date=DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
+
 }
 
 function db_insert_curs($data) {
@@ -61,5 +69,19 @@ function get_db_curs($date) {
 	while($row = $result->fetch_assoc()) {
 	    $data[] = $row;
 	}
+	return $data;
+}
+
+function get_db_curs_proc($date, $allow_code) {
+	$mysqli = connect();
+
+	$request = sprintf("CALL p('%s','%s')", $date->format('Y-m-d'), implode(',',$allow_code));
+	$result = $mysqli->query($request);
+
+	$data = [];
+	while($row = $result->fetch_assoc()) {
+	    $data[] = $row;
+	}
+
 	return $data;
 }

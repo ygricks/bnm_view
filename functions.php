@@ -6,10 +6,7 @@ function get_bnm_curs($date) {
 		$bnm_url = 'https://www.bnm.md/en/official_exchange_rates?get_xml=1&date=%s';
 		$xml_source = sprintf($bnm_url, $date->format('d.m.Y'));
 
-		// # file test
-		// $xml_source = __DIR__ . DIRECTORY_SEPARATOR . 'curs.xml';
-
-		$xml_string = file_get_contents($xml_source);
+		@$xml_string = file_get_contents($xml_source);
 		$xml = new SimpleXMLElement(trim($xml_string));
 
 		$date = $date->format('Y-m-d');
