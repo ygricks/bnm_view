@@ -13,7 +13,7 @@ function connect() {
 
 function db_setUp() {
 	# CREATE DATABASE curs_db CHARACTER SET utf8 COLLATE utf8_general_ci;
-	$req = "CREATE TABLE IF NOT EXISTS `curs`(
+	$req = "CREATE TABLE IF NOT EXISTS `%s`(
 		date DATE NOT NULL,
 		code char(3) NOT NULL,
 		name varchar(30) NOT NULL,
@@ -22,7 +22,8 @@ function db_setUp() {
 		PRIMARY KEY (date, code)
 	)";
 	$mysqli = connect();
-	$mysqli->query($req);
+	$mysqli->query(sprintf($req, 'curs'));
+	$mysqli->query(sprintf($req, 'curt'));
 	// # procedure
 	$mysqli->query("DROP PROCEDURE IF EXISTS p");
 	$mysqli->query("CREATE PROCEDURE p(day VARCHAR(10), code_list TEXT)
@@ -30,7 +31,6 @@ function db_setUp() {
 	$mysqli->query("SET GLOBAL event_scheduler = ON");
 	$mysqli->query("DROP EVENT IF EXISTS b");
 	$mysqli->query("CREATE EVENT IF NOT EXISTS b ON SCHEDULE EVERY 23 DAY_HOUR DO INSERT INTO curt (date,code,name,value,nominal) SELECT  date,code,name,value,nominal FROM curs WHERE date=DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
-
 }
 
 function db_insert_curs($data) {
@@ -58,18 +58,6 @@ function db_insert_curs($data) {
 		}
 		$mysqli->commit();
 	}
-}
-
-function get_db_curs($date) {
-	$query = sprintf("SELECT * FROM `curs` WHERE date='%s'", $date->format('Y-m-d'));
-	$mysqli = connect();
-	$result = $mysqli->query($query);
-
-	$data = [];
-	while($row = $result->fetch_assoc()) {
-	    $data[] = $row;
-	}
-	return $data;
 }
 
 function get_db_curs_proc($date, $allow_code) {
