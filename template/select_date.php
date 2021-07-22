@@ -9,7 +9,7 @@
 			<td>select valute:</td>
 			<td>&nbsp;
 				<?php foreach($code as $c=>$v): ?>
-					<?=$c?> <input type="checkbox" <?=$v?'checked="checked"':''?> name="code[]" value="<?=$c?>"> &nbsp;
+					<label for="<?=$c?>"> <?=$c?> <input id="<?=$c?>" type="checkbox" <?=$v?'checked="checked"':''?> name="code[]" value="<?=$c?>"></label> &nbsp;
 				<?php endforeach; ?>
 			</td>
 		</tr>

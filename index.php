@@ -4,10 +4,8 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require_once('db.php');
-require_once('functions.php');
-
-connect();
 db_setUp();
+require_once('functions.php');
 
 $allow_code = ['EUR','USD','RUB','RON'];
 
@@ -18,14 +16,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$selected = array_merge($allow_keys, $selected_keys);
 
 	$date = new DateTime($_POST['date']);
-	$data = get_db_curs_proc($date, $selected_code);
+	$data = db_select_curs_by($date, $selected_code);
 	if(!count($data)) {
 		$data = get_bnm_curs($date);
 
 		if($data) {
 			db_insert_curs($data);
 		}
-		$data = get_db_curs_proc($date, $selected_code);
+		$data = db_select_curs_by($date, $selected_code);
 	}
 	$body = template('select_date', [
 		'code' => $selected,

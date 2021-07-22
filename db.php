@@ -60,7 +60,7 @@ function db_insert_curs($data) {
 	}
 }
 
-function get_db_curs_proc($date, $allow_code) {
+function db_select_curs_by($date, $allow_code) {
 	$mysqli = connect();
 
 	$request = sprintf("CALL p('%s','%s')", $date->format('Y-m-d'), implode(',',$allow_code));
